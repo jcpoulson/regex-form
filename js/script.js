@@ -38,7 +38,7 @@ const chooseShirt = () => {
 }
 
 
-const addPrice = () => {
+const addPriceAndFilterEvents = () => {
     const activities = document.querySelector('#activities-box');
     const cost = document.querySelector('#activities-cost');
         
@@ -48,6 +48,17 @@ const addPrice = () => {
         for (let i = 0; i < activities.children.length; i++) {
             if (activities.children[i].firstElementChild.checked) {
                 total += parseInt(activities.children[i].firstElementChild.getAttribute("data-cost"));
+                times.push(activities.children[i].firstElementChild.getAttribute("data-day-and-time"));
+            }
+        }
+        
+        for (let i = 0; i < activities.children.length; i++) {
+            if ( times.includes(activities.children[i].firstElementChild.getAttribute("data-day-and-time")) && activities.children[i].firstElementChild.checked == false) {
+                activities.children[i].firstElementChild.className = "disabled";
+                activities.children[i].firstElementChild.parentElement.className = "disabled";
+            } else {
+                activities.children[i].firstElementChild.className = "";
+                activities.children[i].firstElementChild.parentElement.className = "";
             }
         }
         cost.innerHTML = `Total: $${total}`;
@@ -215,14 +226,24 @@ const didUserSelectEvent = () => {
 // Form validation function
 const formValidation = () => {
     form.addEventListener('submit', function(e) {
-        e.preventDefault()
-        isNameValid()
-        isEmailValid(emailField.value)
-        didUserSelectEvent();
-        isCreditCardValid(ccNumField.value)
-        isZipCodeValid(zipField.value)
-        isCvvValid(cvvField.value)
 
+        if ( !isNameValid() ) {
+            e.preventDefault()
+        } else if ( !isEmailValid(emailField.value) ) {
+            e.preventDefault()
+        } else if ( !didUserSelectEvent() ) {
+             e.preventDefault()
+        } else if ( !isCreditCardValid(ccNumField.value) ) {
+            e.preventDefault()
+        } else if ( !isZipCodeValid(zipField.value) ) {
+            e.preventDefault()
+        } else if ( !isCvvValid(cvvField.value) ) {
+            e.preventDefault()
+        } else {
+            e.submit()
+        }
+
+        
         // Adds validate class if all payment fields are filled out
         if ( isCreditCardValid(ccNumField.value) && isZipCodeValid(zipField.value) && isCvvValid(cvvField.value) ) {
             paymentFieldSet.className = 'payment-methods valid';
@@ -230,6 +251,7 @@ const formValidation = () => {
             paymentFieldSet.className = 'paymnet-methods not-valid';
         }
 
+        
         // Adds validate class if all basic info fields are filled out
         if ( isNameValid() && isEmailValid(emailField.value) ) {
             basicInfoFieldSet.className = 'basic-info valid';
@@ -237,6 +259,39 @@ const formValidation = () => {
             basicInfoFieldSet.className = 'basic-info not-valid'
         }
 
+    })
+
+    // Real Time error message for name field
+    nameField.addEventListener('keyup', function() {
+        let nameRegex = /^[a-zA-Z ]{1,30}$/;
+        if ( nameRegex.test(nameField.value) ) {
+            nameField.style.border = '';
+            nameHint.className = "name-hint hint";
+            nameHint.style.color = '';
+        } else {
+            nameField.style.border = 'solid 5px red';
+            nameHint.className = "name-hint";
+            nameHint.style.color = 'red';
+        }
+    })
+
+    // This section displays conditional error messages depending on what the error is in the email field
+    emailField.addEventListener('blur', function() {
+        if (emailField.value.includes("@") == false) {
+            emailField.style.border = 'solid 5px red';
+            emailHint.className = "email-hint";
+            emailHint.textContent = 'Your email address is missing the "@" character';
+            emailHint.style.color = 'red';
+        } else if (emailField.value.includes(".") == false) {
+            emailField.style.border = 'solid 5px red';
+            emailHint.className = "email-hint";
+            emailHint.textContent = 'The ".com/.net/org" section of your email address needs to be formatted properly';
+            emailHint.style.color = 'red';
+        } else {
+            emailField.style.border = '';
+            emailHint.className = "email-hint hint";
+            emailHint.style.color = '';
+        }
     })
 }
 
@@ -246,7 +301,7 @@ const formValidation = () => {
 // Function Calls
 jobRole();
 chooseShirt();
-addPrice();
+addPriceAndFilterEvents();
 paymentSelection();
 formValidation();
 focusAccessibility();
