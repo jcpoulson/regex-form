@@ -44,6 +44,7 @@ const addPrice = () => {
         
     activities.addEventListener('click', function() {
         let total = 0;
+        let times = [];
         for (let i = 0; i < activities.children.length; i++) {
             if (activities.children[i].firstElementChild.checked) {
                 total += parseInt(activities.children[i].firstElementChild.getAttribute("data-cost"));
@@ -78,6 +79,22 @@ const paymentSelection = () => {
             cardForm.style.display = "";
         }
     })
+}
+
+const focusAccessibility = () => {
+    const checkBoxes = document.querySelectorAll('input[type=checkbox]');
+
+    for (i = 0; i < checkBoxes.length; i++) {
+        checkBoxes[i].addEventListener('focus', (e) => {
+            e.target.parentElement.className = "focus";
+        })
+    }
+
+    for (i = 0; i < checkBoxes.length; i++) {
+        checkBoxes[i].addEventListener('blur', (e) => {
+            e.target.parentElement.className = "";
+        })
+    }
 }
 
 // Form Validation Global Variables
@@ -225,9 +242,11 @@ const formValidation = () => {
 
 
 
+
 // Function Calls
 jobRole();
 chooseShirt();
 addPrice();
 paymentSelection();
 formValidation();
+focusAccessibility();
