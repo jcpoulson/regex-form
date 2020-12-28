@@ -115,6 +115,8 @@ const focusAccessibility = () => {
     }
 }
 
+/* All code beyond this point is for form validation */
+
 // Form Validation Global Variables
 const form = document.querySelector('.form-hint').parentNode; 
 const nameField = document.querySelector('#name');
@@ -132,8 +134,6 @@ const cvvHint = document.querySelector('#cvv-hint');
 const paymentFieldSet = document.querySelector('.payment-methods');
 const basicInfoFieldSet = document.querySelector('.basic-info');
 const paymentSelect = document.querySelector('#payment')
-
-/* All code beyond this point is for form validation */
 
 
 // Form validation helper functions
