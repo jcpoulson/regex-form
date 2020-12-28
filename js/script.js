@@ -37,7 +37,13 @@ const chooseShirt = () => {
     });
 }
 
+/* 
+    This Function selects the needed document elements, then loops through the event labels 
+    and if they are checked, it adds up the prices in a variable and saves the day and time in an array.
+    The second loop goes through the elements after having the date and time data and disables the events
+    that have the same date and time
 
+*/
 const addPriceAndFilterEvents = () => {
     const activities = document.querySelector('#activities-box');
     const cost = document.querySelector('#activities-cost');
@@ -92,6 +98,7 @@ const paymentSelection = () => {
     })
 }
 
+
 const focusAccessibility = () => {
     const checkBoxes = document.querySelectorAll('input[type=checkbox]');
 
@@ -124,11 +131,12 @@ const cvvField = document.querySelector('#cvv');
 const cvvHint = document.querySelector('#cvv-hint');
 const paymentFieldSet = document.querySelector('.payment-methods');
 const basicInfoFieldSet = document.querySelector('.basic-info');
+const paymentSelect = document.querySelector('#payment')
 
+/* All code beyond this point is for form validation */
 
 
 // Form validation helper functions
-
 const isNameValid = () => {
     if (nameField.value.length == 0) {
         nameField.style.border = 'solid 5px red';
@@ -143,6 +151,10 @@ const isNameValid = () => {
     }
 }
 
+/* 
+   This function takes an email parameter and creates a regex string for emails and if the
+   given email passes the test, the function returns true but if it doesn't, the email field gives the user an error
+*/
 const isEmailValid = (email) => {
     let regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
     if (regex == false) {
@@ -158,6 +170,10 @@ const isEmailValid = (email) => {
     }
 }
 
+/* 
+   This function takes a credit card number parameter and creates a regex string for credit card numbers and if the
+   given credit card number passes the test, the function returns true but if it doesn't, the credit card number field gives the user an error
+*/
 const isCreditCardValid = (creditCardNumber) => {
     let regex = /^[0-9]{13}$|^[0-9]{14}$|^[0-9]{15}$|^[0-9]{16}$/.test(creditCardNumber);
     if (regex == false) {
@@ -173,6 +189,10 @@ const isCreditCardValid = (creditCardNumber) => {
     }
 }
 
+/* 
+   This function takes an zip code parameter and creates a regex string for zip codes and if the
+   given zip code passes the test, the function returns true but if it doesn't, the zip code field gives the user an error
+*/
 const isZipCodeValid = (zipcode) => {
     let regex = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zipcode);
     if (regex == false) {
@@ -188,6 +208,10 @@ const isZipCodeValid = (zipcode) => {
     }
 }
 
+/* 
+   This function takes an cvv parameter and creates a regex string for cvv's and if the
+   given cvv passes the test, the function returns true but if it doesn't, the cvv field gives the user an error
+*/
 const isCvvValid = (cvv) => {
     let regex = /^[0-9]{3,4}$/.test(cvv);
     if (regex == false) {
@@ -203,11 +227,15 @@ const isCvvValid = (cvv) => {
     }
 }
 
+/* 
+   This function loops through the events and stores the checked ones in an array, if the array is empty, the events field
+   gives the user an error
+*/
 const didUserSelectEvent = () => {
     let eventsChecked = []
     for (let i = 0; i < events.children.length; i++) {
         if (events.children[i].firstElementChild.checked == false) {
-            console.log(events.children[i] + "is not checked");
+            // Pass
         } else {
             eventsChecked.push(events.children[i]);
         }
@@ -217,38 +245,53 @@ const didUserSelectEvent = () => {
         eventsHint.className = "activities-hint";
         eventsHint.style.color = "red";
         events.parentElement.className = "activities not-valid";
+        return false;
     } else if (eventsChecked.length != 0) {
         eventsHint.className = "activities-hint hint";
         events.parentElement.className = "activities valid"; // Adds valid class to fieldset if an event is selected
+        return true;
     }
 }
 
-// Form validation function
+/* 
+   This function calls each of the helper functions and if any of them return false, the form is not submitted,
+   this function also does field validation for the basic info field and the payment field
+*/
 const formValidation = () => {
     form.addEventListener('submit', function(e) {
 
-        if ( !isNameValid() ) {
-            e.preventDefault()
-        } else if ( !isEmailValid(emailField.value) ) {
-            e.preventDefault()
-        } else if ( !didUserSelectEvent() ) {
-             e.preventDefault()
-        } else if ( !isCreditCardValid(ccNumField.value) ) {
-            e.preventDefault()
-        } else if ( !isZipCodeValid(zipField.value) ) {
-            e.preventDefault()
-        } else if ( !isCvvValid(cvvField.value) ) {
-            e.preventDefault()
-        } else {
-            e.submit()
+        if ( isNameValid == false) {
+            e.preventDefault();
         }
 
+        if ( isEmailValid(emailField.value) == false) {
+            e.preventDefault();
+        }
         
+        if ( isCreditCardValid(ccNumField.value) == false && paymentSelect.value == "credit-card") {
+            e.preventDefault();
+        }
+
+        if ( isZipCodeValid(zipField.value) == false && paymentSelect.value == "credit-card") {
+            e.preventDefault();
+        }
+
+        if ( isCvvValid(cvvField.value) == false && paymentSelect.value == "credit-card") {
+            e.preventDefault();
+        }
+
+        if ( didUserSelectEvent() == false && paymentSelect.value == "credit-card") {
+            e.preventDefault();
+        }
+
+
         // Adds validate class if all payment fields are filled out
         if ( isCreditCardValid(ccNumField.value) && isZipCodeValid(zipField.value) && isCvvValid(cvvField.value) ) {
             paymentFieldSet.className = 'payment-methods valid';
+        } else if (paymentSelect.value != "credit-card") {
+            paymentFieldSet.className = 'payment-methods valid';
         } else {
-            paymentFieldSet.className = 'paymnet-methods not-valid';
+            paymentFieldSet.className = 'payment-methods not-valid';
         }
 
         
@@ -258,6 +301,8 @@ const formValidation = () => {
         } else {
             basicInfoFieldSet.className = 'basic-info not-valid'
         }
+
+
 
     })
 
@@ -294,7 +339,6 @@ const formValidation = () => {
         }
     })
 }
-
 
 
 
