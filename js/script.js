@@ -60,10 +60,10 @@ const addPriceAndFilterEvents = () => {
         
         for (let i = 0; i < activities.children.length; i++) {
             if ( times.includes(activities.children[i].firstElementChild.getAttribute("data-day-and-time")) && activities.children[i].firstElementChild.checked == false) {
-                activities.children[i].firstElementChild.className = "disabled";
+                activities.children[i].firstElementChild.disabled = true;
                 activities.children[i].firstElementChild.parentElement.className = "disabled";
             } else {
-                activities.children[i].firstElementChild.className = "";
+                activities.children[i].firstElementChild.disabled = false;
                 activities.children[i].firstElementChild.parentElement.className = "";
             }
         }
