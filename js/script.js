@@ -332,6 +332,11 @@ const formValidation = () => {
             emailHint.className = "email-hint";
             emailHint.textContent = 'The ".com/.net/org" section of your email address needs to be formatted properly';
             emailHint.style.color = 'red';
+        } else if (emailField.value.length == 0) {
+            emailField.style.border = 'solid 5px red';
+            emailHint.className = "email-hint";
+            emailHint.textContent = 'No email entered, please enter an email address';
+            emailHint.style.color = 'red';
         } else {
             emailField.style.border = '';
             emailHint.className = "email-hint hint";
